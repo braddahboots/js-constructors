@@ -118,9 +118,11 @@ Spellcaster.prototype.inflictDamage = function(damage) {
    */
 
 Spellcaster.prototype.spendMana = function (cost) {
-  this.mana -= cost;
-  if( this.mana > cost ) {
+  if(this.mana >= cost) {
+    this.mana -= cost;
     return true;
+  } else {
+    return false;
   }
 };
 
@@ -150,3 +152,18 @@ Spellcaster.prototype.spendMana = function (cost) {
    * @param  {Spellcaster} target         The spell target to be inflicted.
    * @return {boolean}                    Whether the spell was successfully cast.
    */
+
+Spellcaster.prototype.invoke = function(spell, target) {
+  if( (spell instanceof Spell) && !(spell instanceof DamageSpell) ) {
+    return this.spendMana(spell.cost);
+  } else if(spell instanceof DamageSpell) {
+      if(target instanceof Spellcaster && this.spendMana(spell.cost)) {
+        target.inflictDamage(spell.damage);
+          return true;
+      } else {
+          return false;
+      }
+  } else if( !(spell instanceof Spell) && !(spell instanceof DamageSpell) ) {
+    return false;
+  }
+};
